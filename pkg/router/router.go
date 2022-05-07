@@ -1,11 +1,10 @@
-package event_observers
+package middleware
 
 import (
 	"log"
 	"net/http"
 	"time"
 
-	"github.com/Becram/sql-prometheus-metrics/pkg/event_observers"
 	"github.com/Becram/sql-prometheus-metrics/pkg/models"
 	"github.com/gorilla/mux"
 )
@@ -17,7 +16,7 @@ var routes = Routes{
 		"jobs",
 		"GET",
 		"/",
-		even,
+		event_observers.jobHandler,
 	},
 }
 
