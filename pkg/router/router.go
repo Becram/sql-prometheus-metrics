@@ -1,3 +1,13 @@
+package models
+
+import (
+	"log"
+	"net/http"
+	"time"
+
+	"github.com/gorilla/mux"
+)
+
 func NewRouter() *mux.Router {
 
 	router := mux.NewRouter().StrictSlash(true)

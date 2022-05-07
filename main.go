@@ -6,9 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Becram/sql-prometheus-metrics/pkg/event_observers"
-	"github.com/Becram/sql-prometheus-metrics/pkg/home"
-	"github.com/gorilla/mux"
+	"github.com/Becram/k8s-api-client/pkg/k8s"
+	"github.com/Becram/sql-prometheus-metrics/pkg/router"
 )
 
 type Route struct {
@@ -20,13 +19,33 @@ type Route struct {
 
 type Routes []Route
 
+var routes = Routes{
+	Route{
+		"Index",
+		"GET",
+		"/",
+		events_,
+	},
+	Route{
+		"restartDeployment",
+		"POST",
+		"/restart",
+		k8s.RestartDeployment,
+	},
+	Route{
+		"listDeployment",
+		"POST",
+		"/list",
+		k8s.ListDeployment,
+	},
+}
 
 var routes = Routes{
 	Route{
 		"Index",
 		"GET",
 		"/",
-		events.,
+		event_observers.jobHandler,
 	},
 }
 

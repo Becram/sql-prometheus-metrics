@@ -1,4 +1,4 @@
-package home
+package event_observers
 
 import (
 	"database/sql"
@@ -54,7 +54,7 @@ var (
 	database_name = os.Getenv("DB_NAME")
 )
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
+func jobHandler(w http.ResponseWriter, r *http.Request) {
 	appInit()
 	// fmt.Printf("Dial to %s:%d\n", hostname, host_port)
 	// err := telnet.DialToAndCall(fmt.Sprintf("%s:%d", hostname, host_port), caller{})
