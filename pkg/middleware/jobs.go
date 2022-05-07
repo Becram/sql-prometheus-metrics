@@ -87,13 +87,13 @@ func jobHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //------------------------- handler functions ----------------
-func getAllRunningJobs([]models.Event, error) {
+func getAllRunningJobs() ([]models.Event, error) {
 	db := createConnection()
 
 	// close the db connection
 	defer db.Close()
 
-	events := []models.Event{}
+	var events []models.Event
 
 	// create the select sql query
 	sqlStatement := `SELECT * FROM public.event_observers where status = 'running'`
@@ -109,10 +109,14 @@ func getAllRunningJobs([]models.Event, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		event := models.Event{}
-		if err := rows.Scan(&event.ID, &event.Status, &event.ForceStop, &event.CreatedAt, &event.UpdatedAt, &event.JobType); err != nil {
-			log.Fatalf("could not scan row: %v", err)
+		var event models.Event
+
+		// unmarshal the row object to user
+		err = rows.Scan(&event.ID, &event.Status, &event.ForceStop, &event.CreatedAt, &event.UpdatedAt, &event.JobType)
+		if err != nil {
+			log.Fatalf("Unable to scan the row. %v", err)
 		}
+
 		events = append(events, event)
 	}
 
