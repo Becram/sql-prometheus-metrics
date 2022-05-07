@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-type EventObservers struct {
+type Event struct {
 	ID        string `json:"id"`
 	Status    string `json:"order_date"`
 	ForceStop string `json:"force_stop"`

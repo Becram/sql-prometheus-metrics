@@ -46,14 +46,9 @@ var (
 	database_name = os.Getenv("DB_NAME")
 )
 
-func jobHandler(w http.ResponseWriter, r *http.Request) {
+// create connection with postgres db
+func createConnection() *sql.DB {
 	appInit()
-	// fmt.Printf("Dial to %s:%d\n", hostname, host_port)
-	// err := telnet.DialToAndCall(fmt.Sprintf("%s:%d", hostname, host_port), caller{})
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 
 	pg_con_string := fmt.Sprintf("port=%s host=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
@@ -64,36 +59,63 @@ func jobHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	// defer db.Close()
 
-	if err := db.Ping(); err != nil {
-		log.Fatalf("unable to reach database: %v", err)
+	// check the connection
+	err = db.Ping()
+
+	if err != nil {
+		panic(err)
 	}
 
 	fmt.Println("Successfully connected!")
+	// return the connection
+	return db
+}
 
-	rows, err := db.Query("SELECT * FROM public.event_observers where status = 'running' ")
+func jobHandler(w http.ResponseWriter, r *http.Request) {
+
+	// get all the users in the db
+	events, err := getAllRunningJobs()
+
 	if err != nil {
-		log.Fatalf("could not execute query: %v", err)
+		log.Fatalf("Unable to get all running jobs. %v", err)
 	}
 
-	events := []models.EventObservers{}
+	// send all the users as response
+	json.NewEncoder(w).Encode(events)
+
+}
+
+//------------------------- handler functions ----------------
+func getAllRunningJobs([]models.Event, error) {
+	db := createConnection()
+
+	// close the db connection
+	defer db.Close()
+
+	events := []models.Event{}
+
+	// create the select sql query
+	sqlStatement := `SELECT * FROM public.event_observers where status = 'running'`
+
+	// execute the sql statement
+	rows, err := db.Query(sqlStatement)
+
+	if err != nil {
+		log.Fatalf("Unable to execute the query. %v", err)
+	}
+
+	// close the statement
+	defer rows.Close()
 
 	for rows.Next() {
-		event := models.EventObservers{}
+		event := models.Event{}
 		if err := rows.Scan(&event.ID, &event.Status, &event.ForceStop, &event.CreatedAt, &event.UpdatedAt, &event.JobType); err != nil {
 			log.Fatalf("could not scan row: %v", err)
 		}
 		events = append(events, event)
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-
-	if err := json.NewEncoder(w).Encode(events); err != nil {
-		panic(fmt.Errorf("failed to get status: %v", err))
-	}
-
-	fmt.Printf("found %d jobs running\n", len(events))
+	return events, err
 
 }

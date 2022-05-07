@@ -5,36 +5,39 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Becram/sql-prometheus-metrics/pkg/middleware"
 	"github.com/Becram/sql-prometheus-metrics/pkg/models"
 	"github.com/gorilla/mux"
 )
 
 type Routes []models.Route
 
-var routes = Routes{
-	models.Route{
-		"jobs",
-		"GET",
-		"/",
-		event_observers.jobHandler,
-	},
-}
+// var routes = Routes{
+// 	models.Route{
+// 		"jobs",
+// 		"GET",
+// 		"/",
+// 		middleware.jobHandler,
+// 	},
+// }
 
 func NewRouter() *mux.Router {
 
 	router := mux.NewRouter().StrictSlash(true)
-	for _, route := range routes {
+	router.HandleFunc("/api/user/{id}", middleware.jobHandler).Methods("GET", "OPTIONS")
 
-		var handler http.Handler
-		handler = route.HandlerFunc
-		handler = Logger(handler, route.Name)
+	// for _, route := range routes {
 
-		router.
-			Methods(route.Method).
-			Path(route.Pattern).
-			Name(route.Name).
-			Handler(handler)
-	}
+	// 	var handler http.Handler
+	// 	handler = route.HandlerFunc
+	// 	handler = Logger(handler, route.Name)
+
+	// 	router.
+	// 		Methods(route.Method).
+	// 		Path(route.Pattern).
+	// 		Name(route.Name).
+	// 		Handler(handler)
+	// }
 
 	return router
 }
