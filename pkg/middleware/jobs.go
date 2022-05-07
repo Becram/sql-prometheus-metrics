@@ -72,7 +72,7 @@ func createConnection() *sql.DB {
 	return db
 }
 
-func jobHandler(w http.ResponseWriter, r *http.Request) {
+func GetAllRunningJobs(w http.ResponseWriter, r *http.Request) {
 
 	// get all the users in the db
 	events, err := getAllRunningJobs()

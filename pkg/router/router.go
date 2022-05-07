@@ -1,4 +1,4 @@
-package middleware
+package router
 
 import (
 	"log"
@@ -12,32 +12,10 @@ import (
 
 type Routes []models.Route
 
-// var routes = Routes{
-// 	models.Route{
-// 		"jobs",
-// 		"GET",
-// 		"/",
-// 		middleware.jobHandler,
-// 	},
-// }
-
 func NewRouter() *mux.Router {
 
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/api/user/{id}", middleware.jobHandler).Methods("GET", "OPTIONS")
-
-	// for _, route := range routes {
-
-	// 	var handler http.Handler
-	// 	handler = route.HandlerFunc
-	// 	handler = Logger(handler, route.Name)
-
-	// 	router.
-	// 		Methods(route.Method).
-	// 		Path(route.Pattern).
-	// 		Name(route.Name).
-	// 		Handler(handler)
-	// }
+	router.HandleFunc("/api/getall", middleware.GetAllRunningJobs).Methods("GET", "OPTIONS")
 
 	return router
 }
