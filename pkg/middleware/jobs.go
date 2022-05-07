@@ -1,4 +1,4 @@
-package event_observers
+package middleware
 
 import (
 	"database/sql"
