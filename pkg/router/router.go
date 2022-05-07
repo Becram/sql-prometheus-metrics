@@ -5,8 +5,21 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Becram/sql-prometheus-metrics/pkg/event_observers"
+	"github.com/Becram/sql-prometheus-metrics/pkg/models"
 	"github.com/gorilla/mux"
 )
+
+type Routes []models.Route
+
+var routes = Routes{
+	models.Route{
+		"jobs",
+		"GET",
+		"/",
+		even,
+	},
+}
 
 func NewRouter() *mux.Router {
 

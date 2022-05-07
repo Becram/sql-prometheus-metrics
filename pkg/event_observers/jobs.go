@@ -1,4 +1,4 @@
-package jobs
+package event_observers
 
 import (
 	"database/sql"
