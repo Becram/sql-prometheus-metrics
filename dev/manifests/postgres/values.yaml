@@ -1,0 +1,8 @@
+auth:
+  enablePostgresUser: true
+  username: "app"
+  existingSecret: "postgres-secret"
+  database: "app"
+initdb:
+  ## kubectl create configmap init-db  --from-file=sample-sql.sql --dry-run -oyam
+  scriptsConfigMap: "init-db"

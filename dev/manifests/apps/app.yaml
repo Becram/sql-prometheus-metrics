@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sql-prometheus-metrics
+  name: sql-prometheus-metrics
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sql-prometheus-metrics
+  template:
+    metadata:
+      labels:
+        app: sql-prometheus-metrics
+    spec:
+      containers:
+      - image: sql-prometheus-metrics:1.0
+        name: sql-prometheus-metrics
+        resources:
+          limits:
+            cpu: 50m
+            memory: 64M
+          requests:
+            cpu: 20m
+            memory: 32M
+        env:
+        - name: DB_CONN
+          value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+        envFrom:
+        - secretRef:
+            name: app-env
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sql-prometheus-metrics
+  namespace: apps
+spec:
+  selector:
+    app: sql-prometheus-metrics
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
