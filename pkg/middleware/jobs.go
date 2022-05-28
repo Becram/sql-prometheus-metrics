@@ -67,7 +67,7 @@ func createConnection() *sql.DB {
 		panic(err)
 	}
 
-	fmt.Println("Successfully connected!")
+	fmt.Printf("Successfully connected to %s\n", hostname)
 	// return the connection
 	return db
 }
@@ -86,6 +86,60 @@ func GetAllRunningJobs(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func GetAllFailedJobs(w http.ResponseWriter, r *http.Request) {
+
+	// get all the users in the db
+	events, err := getAllRunningJobs()
+
+	if err != nil {
+		log.Fatalf("Unable to get all running jobs. %v", err)
+	}
+
+	// send all the users as response
+	json.NewEncoder(w).Encode(events)
+
+}
+
+//------------------------- handler functions ----------------
+func getAllFailedJobs() ([]models.Event, error) {
+	db := createConnection()
+
+	// close the db connection
+	defer db.Close()
+
+	var events []models.Event
+
+	// create the select sql query
+	sqlStatement := `SELECT * FROM public.event_observers where status = 'Failed'`
+
+	// execute the sql statement
+	rows, err := db.Query(sqlStatement)
+
+	if err != nil {
+		log.Fatalf("Unable to execute the query. %v", err)
+	}
+
+	// close the statement
+	defer rows.Close()
+
+	for rows.Next() {
+		var event models.Event
+
+		// unmarshal the row object to user
+		err = rows.Scan(&event.ID, &event.Status, &event.ForceStop, &event.CreatedAt, &event.UpdatedAt, &event.JobType)
+		if err != nil {
+			log.Fatalf("Unable to scan the row. %v", err)
+		}
+
+		events = append(events, event)
+	}
+
+	return events, err
+
+}
+
+// failed jobs
+
 //------------------------- handler functions ----------------
 func getAllRunningJobs() ([]models.Event, error) {
 	db := createConnection()
@@ -100,7 +154,6 @@ func getAllRunningJobs() ([]models.Event, error) {
 
 	// execute the sql statement
 	rows, err := db.Query(sqlStatement)
-
 	if err != nil {
 		log.Fatalf("Unable to execute the query. %v", err)
 	}

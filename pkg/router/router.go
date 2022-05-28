@@ -15,7 +15,8 @@ type Routes []models.Route
 func NewRouter() *mux.Router {
 
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/api/getall", middleware.GetAllRunningJobs).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/getallrunning", middleware.GetAllRunningJobs).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/getallfailed", middleware.GetAllFailedJobs).Methods("GET", "OPTIONS")
 
 	return router
 }
